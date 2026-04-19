@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "Sway Favicon",
+  "version": "1.0.0",
+  "description": "Sends tab favicons to SwayFX via native messaging",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "sway-favicon@local",
+      "strict_min_version": "91.0"
+    }
+  },
+  "permissions": [
+    "tabs",
+    "windows",
+    "nativeMessaging"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  }
+}
