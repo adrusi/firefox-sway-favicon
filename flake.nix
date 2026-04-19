@@ -29,7 +29,7 @@
       # The manifest is at $out/lib/mozilla/native-messaging-hosts/sway_favicon.json
       native-host = pkgs.stdenvNoCC.mkDerivation {
         pname = "sway-favicon-native-host";
-        version = "1.0.0";
+        version = "1.1.0";
         src = ./native-host;
         installPhase = ''
           runHook preInstall
@@ -61,7 +61,7 @@
       # home-manager's programs.firefox.profiles.<n>.extensions can use it.
       extension-unsigned = pkgs.stdenvNoCC.mkDerivation {
         pname = "sway-favicon-extension";
-        version = "1.0.0";
+        version = "1.1.0";
         src = ./extension;
         nativeBuildInputs = [ pkgs.zip ];
         buildPhase = "zip -r sway_favicon.xpi .";

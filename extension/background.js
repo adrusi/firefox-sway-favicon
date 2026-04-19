@@ -13,19 +13,42 @@ function getPort() {
 
 async function iconToBase64PNG(url) {
     if (!url) return null;
+    // Fetch using the extension's host permissions (<all_urls>) so CORS headers
+    // on the favicon server are irrelevant.
     const response = await fetch(url);
     if (!response.ok) throw new Error(`fetch ${url}: ${response.status}`);
     const blob = await response.blob();
-    const bitmap = await createImageBitmap(blob);
-    const w = bitmap.width  || 16;
-    const h = bitmap.height || 16;
-    const canvas = new OffscreenCanvas(w, h);
-    canvas.getContext('2d').drawImage(bitmap, 0, 0);
-    const pngBlob = await canvas.convertToBlob({ type: 'image/png' });
-    const buf = await pngBlob.arrayBuffer();
-    let binary = '';
-    for (const b of new Uint8Array(buf)) binary += String.fromCharCode(b);
-    return btoa(binary);
+
+    // Load via a blob URL so the canvas isn't tainted (blob: is same-origin),
+    // and use a DOM Image so the browser's native decoder handles all formats
+    // (SVG, ICO, WebP, ...) correctly.  SVGs often have naturalWidth==0 when
+    // they carry only a viewBox, so we fall back to 64 in that case.
+    const objectUrl = URL.createObjectURL(blob);
+    try {
+        return await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                const w = img.naturalWidth  || 64;
+                const h = img.naturalHeight || 64;
+                const canvas = document.createElement('canvas');
+                canvas.width  = w;
+                canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                canvas.toBlob(pngBlob => {
+                    if (!pngBlob) { reject(new Error('toBlob returned null')); return; }
+                    pngBlob.arrayBuffer().then(buf => {
+                        let s = '';
+                        for (const b of new Uint8Array(buf)) s += String.fromCharCode(b);
+                        resolve(btoa(s));
+                    }).catch(reject);
+                }, 'image/png');
+            };
+            img.onerror = () => reject(new Error(`image load failed: ${url}`));
+            img.src = objectUrl;
+        });
+    } finally {
+        URL.revokeObjectURL(objectUrl);
+    }
 }
 
 async function sendIconForWindow(windowId, favIconUrl) {
