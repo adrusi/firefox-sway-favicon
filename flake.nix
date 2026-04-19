@@ -1,15 +1,22 @@
 {
   description = "Firefox extension + native host that forwards favicons to SwayFX";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-  outputs = { self, nixpkgs }: let
+    firefox-addons = {
+      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = { self, nixpkgs, firefox-addons }: let
     systems = [ "x86_64-linux" "aarch64-linux" ];
     forAllSystems = f: nixpkgs.lib.genAttrs systems
-      (system: f nixpkgs.legacyPackages.${system});
+      (system: f { inherit system; pkgs = nixpkgs.legacyPackages.${system}; });
   in {
 
-    packages = forAllSystems (pkgs: rec {
+    packages = forAllSystems ({ system, pkgs }: rec {
 
       # Signed XPI fetched from the GitHub release.
       # Update url + hash after each release.
@@ -65,7 +72,22 @@
         '';
       };
 
-      default = native-host;
+      extension = firefox-addons.lib.${system}.buildFirefoxXpiAddon {
+        pname = "firefox-sway-favicon";
+        version = "1.0.0";
+        addonId = "sway-favicon@adrusi.com";
+        url = "https://github.com/adrusi/firefox-sway-favicon/releases/download/v1.0.0/sway-favicon.xpi";
+        sha256 = "11300lf185x2a5mywinbmyriplh3qms1c3ycxajhj1s06mcxwlsq";
+        meta = with pkgs.lib; {
+          homepage = "https://github.com/adrusi/firefox-sway-favicon";
+          description = "Sends tab favicons to SwayFX via native messaging";
+          license = licenses.mit;
+          platforms = platforms.all;
+          mozPermissions = [ "tabs" "nativeMessaging" ];
+        };
+      };
+
+      default = extension;
     });
   };
 }
