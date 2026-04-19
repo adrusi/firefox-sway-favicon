@@ -41,7 +41,7 @@
             "description": "Sway favicon bridge",
             "path": "$out/lib/sway-favicon/sway_favicon_host.py",
             "type": "stdio",
-            "allowed_extensions": ["sway-favicon@local"]
+            "allowed_extensions": ["sway-favicon@adrusi.com"]
           }
           EOF
 
@@ -52,7 +52,7 @@
       # Unsigned XPI built from source (for local testing / signing submission).
       # Installs to the standard Firefox extensions directory path so
       # home-manager's programs.firefox.profiles.<n>.extensions can use it.
-      extension = pkgs.stdenvNoCC.mkDerivation {
+      extension-unsigned = pkgs.stdenvNoCC.mkDerivation {
         pname = "sway-favicon-extension";
         version = "1.0.0";
         src = ./extension;
@@ -61,7 +61,7 @@
         installPhase = ''
           GECKO="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
           install -Dm644 sway_favicon.xpi \
-            "$out/share/mozilla/extensions/$GECKO/sway-favicon@local.xpi"
+            "$out/share/mozilla/extensions/$GECKO/sway-favicon@adrusi.com.xpi"
         '';
       };
 

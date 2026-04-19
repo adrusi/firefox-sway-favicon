@@ -5,13 +5,12 @@
   "description": "Sends tab favicons to SwayFX via native messaging",
   "browser_specific_settings": {
     "gecko": {
-      "id": "sway-favicon@local",
+      "id": "sway-favicon@adrusi.com",
       "strict_min_version": "91.0"
     }
   },
   "permissions": [
     "tabs",
-    "windows",
     "nativeMessaging"
   ],
   "background": {
