@@ -74,16 +74,16 @@
 
       extension = firefox-addons.lib.${system}.buildFirefoxXpiAddon {
         pname = "firefox-sway-favicon";
-        version = "1.0.0";
+        version = "1.1.0";
         addonId = "sway-favicon@adrusi.com";
-        url = "https://github.com/adrusi/firefox-sway-favicon/releases/download/v1.0.0/sway-favicon.xpi";
-        sha256 = "11300lf185x2a5mywinbmyriplh3qms1c3ycxajhj1s06mcxwlsq";
+        url = "https://github.com/adrusi/firefox-sway-favicon/releases/download/v1.1.0/sway-favicon.xpi";
+        sha256 = "0i4hhd56kw7jg2ix0l5kvqfibnfn181jfrjrmpzwvvwhz2pqxnaa";
         meta = with pkgs.lib; {
           homepage = "https://github.com/adrusi/firefox-sway-favicon";
           description = "Sends tab favicons to SwayFX via native messaging";
           license = licenses.mit;
           platforms = platforms.all;
-          mozPermissions = [ "tabs" "nativeMessaging" ];
+          mozPermissions = [ "tabs" "nativeMessaging" "<all_urls>" ];
         };
       };
 
